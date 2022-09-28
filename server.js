@@ -2,7 +2,7 @@ const HTTP_PORT = process.env.PORT || 8080;
 const express = require('express');
 const app = express();
 const path = require('path');
-const data = require(path.join(__dirname, 'data-service.js'));
+const data = require('./data-service');
 
 app.use(express.static('public')); 
 
@@ -26,7 +26,7 @@ app.get("/students", (req, res) => {
       res.json({ message: err });
     });
 
-    
+
 
 // Route to manager data
 app.get("/intlstudents", (req, res) => {
