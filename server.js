@@ -13,24 +13,7 @@ app.get("/about", (req, res) => {
     res.sendFile(path.join(__dirname,"./views/about.html"));
 })
 
-app.get('/students', async (req, res) => {
-  const allStudents = {...student.users}
-  res.json(allStudents)
-})
 
-app.get("/intlstudents", async (req, res) => {
-  const allStudents = { ...students.users.filter(user => user.isInternationalStudent === true) };
-  res.json(allStudents);
-});
-
-app.get("/programs", async (req, res) => {
-  const allPrograms = { ...programs.users };
-  res.json(allPrograms);
-});
-
-app.use((req, res) => {
-  res.status(404).send('Page Not Found')
-})
 
 
 app.listen(port, () => {
