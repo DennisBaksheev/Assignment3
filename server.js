@@ -18,15 +18,15 @@ app.get("/about", (req, res) => {
 
 // Route to employee data
 app.get("/students", (req, res) => {
-  data.getAllStudents()
-    .then((data) => {
-      res.json(data);
+  const getAllStudents = {...employees.users}
+    res.json(getAllStudents)
     })
     .catch((err) => {
       console.log("Error retrieving students: " + err);
       res.json({ message: err });
     });
-});
+
+    
 
 // Route to manager data
 app.get("/intlstudents", (req, res) => {
