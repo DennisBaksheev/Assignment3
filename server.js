@@ -60,4 +60,6 @@ app.use((req, res) => {
 data.initialize().then(() => {
   app.listen(HTTP_PORT);
   console.log("Express http server listening on " + HTTP_PORT);
-}
+}).catch((err) => {
+  console.log("Error starting server: " + err + " aborting startup");
+});
