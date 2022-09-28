@@ -6,7 +6,7 @@ const students = require('./data/students.json');
 const app = express();
 app.use(express.static("public"));
 const port = process.env.PORT || 8080;
-app.get('/', (req, res) => {
+app.get('/home', (req, res) => {
   res.sendFile(path.join(__dirname,"./views/home.html"));
 })
 app.get("/about", (req, res) => {
