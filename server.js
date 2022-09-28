@@ -1,11 +1,11 @@
-const dataservice = require('./data-sevice');
-const express = require('express');
-const path = require('path');
-const programs = require('./data/programs.json');
-const students = require('./data/students.json');
-const app = express();
+var dataservice = require('./data-sevice');
+var express = require('express');
+var path = require('path');
+var programs = require('./data/programs.json');
+var students = require('./data/students.json');
+var app = express();
 app.use(express.static("public"));
-const port = process.env.PORT || 8080;
+var HTTP_PORT = process.env.PORT || 8080;
 
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname,"./views/home.html"));
