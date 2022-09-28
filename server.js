@@ -1,62 +1,63 @@
-var express = require("express");
-var app = express();
+const HTTP_PORT = process.env.PORT || 8080;
+const express = require('express');
+const app = express();
+const path = require('path');
+const data = require(path.join(__dirname, 'data-service.js'));
 
-var path = require("path");
-var data_service = require("./data-service.js")
-var HTTP_PORT = process.env.PORT || 8080;
+app.use(express.static('public')); 
 
-app.use(express.static('public'));
-
-// call this function after the http server starts listening for requests
-function onHttpStart() {
-    console.log("Express http server listening on: " + HTTP_PORT);
-}
-
-// setup a 'route' to listen on the default url path (http://localhost:8080)
-app.get("/", (req,res) =>{
-    res.sendFile(path.join(__dirname, "/views/home.html"));
+// Route to the home page
+app.get("/", (req, res) => {
+  res.sendFile(path.join(__dirname, '/views/home.html')); // Send the home page  
 });
 
-// setup another route to listen on /about
-app.get("/about", (req,res) =>{
-    res.sendFile(path.join(__dirname, "/views/about.html"));
+// Route to About page
+app.get("/about", (req, res) => {
+  res.sendFile(path.join(__dirname, '/views/about.html'));
 });
 
-// Adding additional routes
-app.get("/employees", (req,res) =>{
-    data_service.getAllEmployees().then((data)=>{
-        res.json(data);
-    }).catch((err)=>{
-        console.log(err);
-        res.json({ message: err });
+// Route to employee data
+app.get("/students", (req, res) => {
+  data.getAllStudents()
+    .then((data) => {
+      res.json(data);
+    })
+    .catch((err) => {
+      console.log("Error retrieving students: " + err);
+      res.json({ message: err });
     });
 });
 
-
-app.get("/students", (req,res)=>{
-    data_service.getStudents().then((data)=>{
-        res.json(data);
-    }).catch((err)=>{
-        console.log(err);
-        res.json({ message: err });
+// Route to manager data
+app.get("/intlstudents", (req, res) => {
+  data.getIntlstudents()
+    .then((data) => {
+      res.json(data);
+    })
+    .catch((err) => {
+      console.log("Error retrieving intlstudents: " + err);
+      res.json({ message: err });
     });
 });
 
-app.get("/departments", (req,res)=>{
-    data_service.getDepartments().then((data)=>{
-        res.json(data);
-    }).catch((err)=>{
-        console.log(err);
-        res.json({ message: err });
+// Route to department data
+app.get("/programs", (req, res) => {
+  data.getPrograms()
+    .then((data) => {
+      res.json(data);
+    })
+    .catch((err) => {
+      console.log("Error retrieving programs: " + err);
+      res.json({ message: err });
     });
 });
 
+// Catch all other requests
 app.use((req, res) => {
-    res.status(404).send("Error 404: Page Not Found.");
-});
+  res.status(404).send("Page Not Found");
+})
 
-data_service.initialize().then(() => {
-    app.listen(HTTP_PORT, onHttpStart);
-}).catch((err) => {
-    console.log("Error: " + err);
-});
+data.initialize().then(() => {
+  app.listen(HTTP_PORT);
+  console.log("Express http server listening on " + HTTP_PORT);
+}
