@@ -1,4 +1,4 @@
-const data_service = require('./data-sevice');
+const dataservice = require('./data-sevice');
 const express = require('express');
 const path = require('path');
 const programs = require('./data/programs.json');
@@ -6,6 +6,7 @@ const students = require('./data/students.json');
 const app = express();
 app.use(express.static("public"));
 const port = process.env.PORT || 8080;
+
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname,"./views/home.html"));
 })
@@ -13,6 +14,9 @@ app.get("/about", (req, res) => {
     res.sendFile(path.join(__dirname,"./views/about.html"));
 })
 
+app.use((req, res) => {
+  res.status(404).send("404 Error - Page Not Found");
+});
 
 
 
