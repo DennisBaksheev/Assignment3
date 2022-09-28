@@ -18,7 +18,7 @@ app.get("/about", (req, res) => {
 
 // Route to employee data
 app.get("/students", (req, res) => {
-  const getAllStudents = {...employees.users}
+  const getAllStudents = {...students.users}
     res.json(getAllStudents)
     })
     .catch((err) => {
