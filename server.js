@@ -8,22 +8,24 @@
 *  Online (Cyclic) Link: https://plum-important-wildebeest.cyclic.app/
 *
 ********************************************************************************/ 
-const dataservice = require('./data-service')
 const express = require('express')
 const path = require('path')
-const PORT = process.env.PORT || 8080;
+const dataService = require('./data-service.js')
 const app = express()
-app.use(express.static('public')); 
-app.get('/', (req, res) => {
-    res.sendFile('./views/home.html', { root: __dirname })
+const PORT = process.env.PORT || 8080
+
+app.use(express.static(path.join(__dirname, '/public')));
+
+app.get('/', (_, res) => {
+	res.sendFile(__dirname + '/views/home.html')
 })
 
-app.get('/about', (req, res) => {
-    res.sendFile('./views/about.html', { root: __dirname })
+app.get('/about', (_, res) => {
+	res.sendFile(__dirname + '/views/about.html')
 })
 
 app.get('/students', (_, res) => {
-	dataservice.getAllStudents().then((data) => {
+	dataService.getAllStudents().then((data) => {
 		res.json(data)
 	}).catch((err) => {
 		res.json({ message: err })
@@ -31,7 +33,7 @@ app.get('/students', (_, res) => {
 })
 
 app.get('/intlstudents', (_, res) => {
-	dataservice.getInternationalStudents().then((data) => {
+	dataService.getInternationalStudents().then((data) => {
 		res.json(data)
 	}).catch((err) => {
 		res.json({ message: err })
@@ -39,18 +41,18 @@ app.get('/intlstudents', (_, res) => {
 })
 
 app.get('/programs', (_, res) => {
-	dataservice.getPrograms().then((data) => {
+	dataService.getPrograms().then((data) => {
 		res.json(data)
 	}).catch((err) => {
 		res.json({ message: err })
 	})
 })
 
-app.use((req, res) => {
-    res.status(404).send('Page Not Found')
+app.get('*', (_, res) => {
+	res.status(404).send('Page Not Found')
 })
 
-dataservice.initialize().then(() => {
+dataService.initialize().then(() => {
 	app.listen(PORT, () => {
 		console.log(`Express http server listening on ${PORT}`)
 	})
