@@ -5,15 +5,9 @@
 * 
 *  Name: _Dennis Baksheev_____________________ Student ID: _114797186_____________ Date: _2022-09-28_______________
 *
-*  Online (Cyclic) Link: 
+*  Online (Cyclic) Link: https://plum-important-wildebeest.cyclic.app/
 *
 ********************************************************************************/ 
-
-
-
-
-
-
 var dataservice = require('./data-service')
 const express = require('express')
 const programs = require('./data/programs.json')
