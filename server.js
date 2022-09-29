@@ -8,10 +8,9 @@
 *  Online (Cyclic) Link: https://plum-important-wildebeest.cyclic.app/
 *
 ********************************************************************************/ 
-var dataservice = require('./data-service')
+const dataservice = require('./data-service')
 const express = require('express')
-const programs = require('./data/programs.json')
-const students = require('./data/students.json')
+const path = require('path')
 const PORT = process.env.PORT || 8080;
 const app = express()
 app.use(express.static('public')); 
