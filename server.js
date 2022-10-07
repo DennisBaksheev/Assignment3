@@ -16,6 +16,16 @@ const PORT = process.env.PORT || 8080
 
 app.use(express.static(path.join(__dirname, '/public')));
 
+app.get('/students/add', (_, res) => {
+	res.sendFile(__dirname + '/views/addStudent.html')
+})
+
+app.get(/images/add, (_, res) => {
+	res.sendFile(__dirname + '/views/addImage.html')
+})
+
+
+
 app.get('/', (_, res) => {
 	res.sendFile(__dirname + '/views/home.html')
 })
