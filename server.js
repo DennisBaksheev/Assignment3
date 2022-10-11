@@ -9,12 +9,43 @@
 *
 ********************************************************************************/ 
 const express = require('express')
+const fs = require('fs')
 const path = require('path')
+const multer = require('multer');
 const dataService = require('./data-service.js')
 const app = express()
 const PORT = process.env.PORT || 8080
 
+app.use(bodyParser.urlencoded({extended:true}));
+const upload = multer({storage: storage});
+
+const storage = multer.diskStorage({
+    destination: "./public/images/uploaded",
+    filename: function (req, file, cb) {
+        cb(null, Date.now() + path.extname(file.originalname));
+      }
+});
+
+
+
+app.post("/images/add", upload.single("imageFile"), (req,res) => {
+    res.redirect("/images");
+});
+
+app.post('/students/add', (req,res) => {
+    dataservice.addStudent(req.body).then(() => {
+        res.redirect("/students");
+    })
+});
+app.get("/images", (req,res) => {
+    fs.readdir("./public/images/uploaded", function(err,items) {
+        res.json(items);
+    })
+});
+
 app.use(express.static(path.join(__dirname, '/public')));
+
+app.use(express.urlencoded(req.body({ extended: true })));
 
 app.get('/students/add', (_, res) => {
 	res.sendFile(__dirname + '/views/addStudent.html')
