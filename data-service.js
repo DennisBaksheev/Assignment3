@@ -2,6 +2,29 @@ const fs = require('fs')
 var students = []
 var programs = []
 
+exports.addStudent = (studentData) => {
+    studentData.isInternationalStudent==undefined ? studentData.isInternationalStudent = false : studentData.isInternationalStudent = true;
+    studentData.studentNum = students.length + 1;
+    students.push(studentData);
+
+    return new Promise((resolve,reject) => {
+        if (students.length == 0) {
+            reject ('no results');
+        }
+        else {
+            resolve(students);
+        }
+    })
+};
+
+
+
+
+
+
+
+
+
 const initialize = () =>
 	new Promise((resolve, reject) => {
 		try {
