@@ -2,6 +2,63 @@ const fs = require('fs')
 var students = []
 var programs = []
 
+exports.initialize = () => {
+    return new Promise ((resolve, reject) => {
+        file.readFile('./data/students.json', (err,data) => {
+            if (err) {
+                reject ('unable to read file');
+            }
+            else {
+                students = JSON.parse(data);
+            }
+        });
+
+        file.readFile('./data/programs.json', (err,data)=> {
+            if (err) {
+                reject ('unable to read file');
+            }
+            else {
+                programs = JSON.parse(data);
+            }
+        })
+        resolve();
+    })
+};
+
+
+
+
+exports.getAllStudents = () => {
+    return new Promise ((resolve,reject) => {
+        if (students.length == 0) {
+            reject('no results returned');
+        }
+        else {
+            resolve(students);
+        }
+    })
+};
+
+exports.getInternationalStudents = () => {
+    return new Promise((resolve, reject) => {
+        var interStudents = students.filter(student => student.isInternationalStudents == true);
+        if (interStudents.length == 0) {
+            reject('no results returned');
+        }
+        resolve(interStudents);
+    })
+};
+exports.getPrograms = () => {
+    return new Promise((resolve,reject) => {
+        if (programs.length == 0) {
+            reject ('no results returned');
+        }
+        else {
+            resolve (programs);
+        }
+    })
+};
+
 exports.addStudent = (studentData) => {
     studentData.isInternationalStudent==undefined ? studentData.isInternationalStudent = false : studentData.isInternationalStudent = true;
     studentData.studentNum = students.length + 1;
@@ -19,36 +76,51 @@ exports.addStudent = (studentData) => {
 
 
 
+	exports.getStudentByStatus = (status) => {
+		return new Promise((resolve,reject) => {
+			var stu_status = students.filter(student => student.status == status);
+			if (stu_status.length == 0) {
+				reject('no results returned');
+			}
+			resolve(stu_status);
+		})
+	};
+
+	exports.getStudentsByProgramCode = (programCode) => {
+		return new Promise ((resolve,reject) => {
+			var stu_programCode = students.filter(student => student.programCode == programCode);        
+			if (stu_programCode.length == 0) {
+				reject ('no results returned');
+			}
+			resolve(stu_programCode);
+		})
+	};
+
+
+	exports.getStudentsByExpectedCredential = (credential) => {
+		return new Promise ((resolve,reject) => {
+			var stu_credential = students.filter(student => student.studentcredentialNum == credential);
+			if (stu_credential.length == 0) {
+				reject('no results returned');
+			}
+			resolve(stu_credential);
+		})
+	};
+	
+	exports.getStudentById = (sid) => {
+		return new Promise((resolve,reject) => {
+			var stu_sid = students.filter(student => student.studentsid == sid);
+			if (stu_sid.length == 0) {
+				reject('no result returned');
+			}
+			resolve(stu_sid);
+		})
+	}
 
 
 
 
 
-
-const initialize = () =>
-	new Promise((resolve, reject) => {
-		try {
-			fs.readFile('./data/students.json', 'utf8', (err, data) => {
-				if (err) throw err;
-				students = JSON.parse(data)
-			});
-
-			fs.readFile('./data/programs.json', 'utf8', (err, data) => {
-				if (err) throw err;
-				programs = JSON.parse(data)
-			});
-		} catch (err) {
-			reject('Unable to read file')
-		}
-
-		resolve()
-	})
-
-const getAllStudents = () =>
-	new Promise((resolve, reject) => {
-		if (!students || students.length === 0) reject('no results returned')
-		resolve(students)
-	})
 
 const getInternationalStudents = () =>
 	new Promise((resolve, reject) => {
@@ -63,9 +135,3 @@ const getPrograms = () =>
 		resolve(programs)
 	})
 
-module.exports = {
-	initialize,
-	getAllStudents,
-	getInternationalStudents,
-	getPrograms,
-}
