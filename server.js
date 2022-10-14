@@ -131,15 +131,11 @@ app.get('*', (_, res) => {
 	res.status(404).send('Page Not Found')
 })
 
-dataService.initialize().then(() => {
-	app.listen(PORT, () => {
-		console.log(`Express http server listening on ${PORT}`)
-	})
-})
-	.catch((err) => {
-		console.log(err)
-	})
-
+dataservice.initialize().then(() => {
+    app.listen(HTTP_PORT, onHttpStart())
+}).catch (() => {
+    console.log('promises unfulfilled');
+});
 
 
 
