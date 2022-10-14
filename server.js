@@ -8,108 +8,74 @@
 *  Online (Cyclic) Link: https://plum-important-wildebeest.cyclic.app/
 *
 ********************************************************************************/ 
-const HTTP_PORT = process.env.PORT || 8080;
-const express = require('express');
-const path = require('path');
-const multer = require('multer');
-const fs = require('fs');
-const bodyParser = require('body-parser');
-const app = express();
-const dataservice = require(__dirname + "/data-service.js");
+const express = require('express')
+const fs = require('fs')
+const path = require('path')
+const multer = require('multer')
+
+const dataService = require('./data-service.js')
+
+const app = express()
+
+const PORT = process.env.PORT || 8080
 
 const storage = multer.diskStorage({
-    destination: "./public/images/uploaded",
-    filename: function (req, file, cb) {
-        cb(null, Date.now() + path.extname(file.originalname));
-      }
-});
+	destination: "./public/images/uploaded",
+	filename: function (req, file, cb) {
+		cb(null, Date.now() + path.extname(file.originalname))
+	}
+})
 
-const upload = multer({storage: storage});
-
-app.use(bodyParser.urlencoded({extended:true}));
-
-onHttpStart = () => {
-    console.log('Express http server listening on port ' + HTTP_PORT);
-}
+const upload = multer({ storage: storage })
 
 app.use(express.static(path.join(__dirname, '/public')));
-
-app.use(express.urlencoded(req.body({ extended: true })));
+app.use(express.urlencoded({ extended: true }));
 
 app.get('/', (_, res) => {
 	res.sendFile(__dirname + '/views/home.html')
 })
 
-app.get('/home', (req, res) => {
-    res.sendFile(path.join(__dirname + "/views/home.html"));
-});
-
 app.get('/about', (_, res) => {
 	res.sendFile(__dirname + '/views/about.html')
 })
 
-app.get("/students", (req, res) => {
-    if (req.query.status) {
-        dataservice.getStudentsByStatus(req.query.status).then((data) => {
-            res.json({data});
-        }).catch((err) => {
-            res.json({message: err});
-        })
-    }
-    else if (req.query.program) {
-        dataservice.getStudentsByProgramCode(req.query.program).then((data) => {
-            res.json({data});
-        }).catch((err) => {
-            res.json({message: err});
-        })
-    }
-    else if (req.query.credential) {
-        dataservice.getStudentsByExpectedCredential(req.query.credential).then((data) => {
-            res.json({data});
-        }).catch((err) => {
-            res.json({message: err});
-        })
-    }
-    else {
-        dataservice.getAllStudents().then((data) => {
-            res.json({data});
-        }).catch((err) => {
-            res.json({message: err});
-        })
-    }
-});
-
-app.get('/student/:value', (req,res) => {
-    dataservice.getStudentByNum(req.params.value).then((data) => {
-        res.json({data});
-    }).catch((err) => {
-        res.json({message: err});
-    })
-});
-
-app.get('/students/add', (_, res) => {
-	res.sendFile(__dirname + '/views/addStudent.html')
+app.get('/students', (req, res) => {
+	const { status, program, credential } = req.query
+	if (status !== undefined) {
+		dataService.getStudentsByStatus(status).then((data) => {
+			res.json(data)
+		}).catch((err) => {
+			res.json({ message: err })
+		})
+	} else if (program !== undefined) {
+		dataService.getStudentsByProgramCode(program).then((data) => {
+			res.json(data)
+		}).catch((err) => {
+			res.json({ message: err })
+		})
+	} else if (credential !== undefined) {
+		dataService.getStudentsByExpectedCredential(credential).then((data) => {
+			res.json(data)
+		}).catch((err) => {
+			res.json({ message: err })
+		})
+	} else {
+		dataService.getAllStudents().then((data) => {
+			res.json(data)
+		}).catch((err) => {
+			res.json({ message: err })
+		})
+	}
 })
 
-app.post('/students/add', (req,res) => {
-    dataservice.addStudent(req.body).then(() => {
-        res.redirect("/students");
-    })
-});
-
-app.get('/images/add',(req,res) => {
-    res.sendFile(path.join(__dirname + "/views/addImage.html"));
-});
-
-app.post("/images/add", upload.single("imageFile"), (req,res) => {
-    res.redirect("/images");
-});
-
-app.get("/images", (req,res) => {
-    fs.readdir("./public/images/uploaded", function(err,items) {
-        res.json(items);
-    })
-});
+app.get('/student/:value', (req, res) => {
+	const { value } = req.params
+	dataService.getStudentById(value).then((data) => {
+		res.json(data)
+	}).catch((err) => {
+		res.json({ message: err })
+	})
+})
 
 app.get('/intlstudents', (_, res) => {
 	dataService.getInternationalStudents().then((data) => {
@@ -127,15 +93,43 @@ app.get('/programs', (_, res) => {
 	})
 })
 
+app.get('/students/add', (_, res) => {
+	res.sendFile(__dirname + '/views/addStudent.html')
+})
+
+app.post('/students/add', (req, res) => {
+	dataService.addStudent(req.body).then(() => {
+		res.redirect('/students')
+	}).catch((err) => {
+		res.json({ message: err })
+	})
+})
+
+app.get('/images/add', (_, res) => {
+	res.sendFile(__dirname + '/views/addImage.html')
+})
+
+app.post('/images/add', upload.single("imageFile"), (_, res) => {
+	res.redirect('/images')
+})
+
+app.get('/images', (_, res) => {
+	const images = []
+	fs.readdir('./public/images/uploaded', function (err, items) {
+		images.push(items)
+		res.json({ images })
+	});
+})
+
 app.get('*', (_, res) => {
 	res.status(404).send('Page Not Found')
 })
 
-dataservice.initialize().then(() => {
-    app.listen(HTTP_PORT, onHttpStart())
-}).catch (() => {
-    console.log('promises unfulfilled');
-});
-
-
-
+dataService.initialize().then(() => {
+	app.listen(PORT, () => {
+		console.log(`Express http server listening on ${PORT}`)
+	})
+})
+.catch((err) => {
+	console.log(err)
+})

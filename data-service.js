@@ -1,126 +1,32 @@
 const fs = require('fs')
+
 var students = []
 var programs = []
 
-exports.initialize = () => {
-    return new Promise ((resolve, reject) => {
-        file.readFile('./data/students.json', (err,data) => {
-            if (err) {
-                reject ('unable to read file');
-            }
-            else {
-                students = JSON.parse(data);
-            }
-        });
+const initialize = () =>
+	new Promise((resolve, reject) => {
+		try {
+			fs.readFile('./data/students.json', 'utf8', (err, data) => {
+				if (err) throw err;
+				students = JSON.parse(data)
+			});
 
-        file.readFile('./data/programs.json', (err,data)=> {
-            if (err) {
-                reject ('unable to read file');
-            }
-            else {
-                programs = JSON.parse(data);
-            }
-        })
-        resolve();
-    })
-};
+			fs.readFile('./data/programs.json', 'utf8', (err, data) => {
+				if (err) throw err;
+				programs = JSON.parse(data)
+			});
+		} catch (err) {
+			reject('Unable to read file')
+		}
 
+		resolve()
+	})
 
-
-
-exports.getAllStudents = () => {
-    return new Promise ((resolve,reject) => {
-        if (students.length == 0) {
-            reject('no results returned');
-        }
-        else {
-            resolve(students);
-        }
-    })
-};
-
-exports.getInternationalStudents = () => {
-    return new Promise((resolve, reject) => {
-        var interStudents = students.filter(student => student.isInternationalStudents == true);
-        if (interStudents.length == 0) {
-            reject('no results returned');
-        }
-        resolve(interStudents);
-    })
-};
-exports.getPrograms = () => {
-    return new Promise((resolve,reject) => {
-        if (programs.length == 0) {
-            reject ('no results returned');
-        }
-        else {
-            resolve (programs);
-        }
-    })
-};
-
-exports.addStudent = (studentData) => {
-    studentData.isInternationalStudent==undefined ? studentData.isInternationalStudent = false : studentData.isInternationalStudent = true;
-    studentData.studentNum = students.length + 1;
-    students.push(studentData);
-
-    return new Promise((resolve,reject) => {
-        if (students.length == 0) {
-            reject ('no results');
-        }
-        else {
-            resolve(students);
-        }
-    })
-};
-
-
-
-	exports.getStudentByStatus = (status) => {
-		return new Promise((resolve,reject) => {
-			var stu_status = students.filter(student => student.status == status);
-			if (stu_status.length == 0) {
-				reject('no results returned');
-			}
-			resolve(stu_status);
-		})
-	};
-
-	exports.getStudentsByProgramCode = (programCode) => {
-		return new Promise ((resolve,reject) => {
-			var stu_programCode = students.filter(student => student.programCode == programCode);        
-			if (stu_programCode.length == 0) {
-				reject ('no results returned');
-			}
-			resolve(stu_programCode);
-		})
-	};
-
-
-	exports.getStudentsByExpectedCredential = (credential) => {
-		return new Promise ((resolve,reject) => {
-			var stu_credential = students.filter(student => student.studentcredentialNum == credential);
-			if (stu_credential.length == 0) {
-				reject('no results returned');
-			}
-			resolve(stu_credential);
-		})
-	};
-	
-	exports.getStudentById = (sid) => {
-		return new Promise((resolve,reject) => {
-			var stu_sid = students.filter(student => student.studentsid == sid);
-			if (stu_sid.length == 0) {
-				reject('no result returned');
-			}
-			resolve(stu_sid);
-		})
-	}
-
-
-
-
-
+const getAllStudents = () =>
+	new Promise((resolve, reject) => {
+		if (!students || students.length === 0) reject('no results returned')
+		resolve(students)
+	})
 
 const getInternationalStudents = () =>
 	new Promise((resolve, reject) => {
@@ -135,3 +41,57 @@ const getPrograms = () =>
 		resolve(programs)
 	})
 
+const addStudent = (studentData) =>
+	new Promise((resolve, reject) => {
+		if (studentData.isInternationalStudent === undefined) {
+			studentData.isInternationalStudent = false
+		} else {
+			studentData.isInternationalStudent = true
+		}
+
+		const maxStudentId = Math.max(...students.map(o => o.studentID))
+		const newStudentId = (maxStudentId + 1).toString()
+		studentData.studentID = newStudentId
+		students.push(studentData)
+		resolve(students)
+	})
+
+const getStudentsByStatus = (status) =>
+	new Promise((resolve, reject) => {
+		const studentsByStatus = students.filter(o => o.status === status)
+		if (studentsByStatus.length === 0) reject('no results returned')
+		resolve(studentsByStatus)
+	})
+
+const getStudentsByProgramCode = (programCode) =>
+	new Promise((resolve, reject) => {
+		const studentsByProgramCode = students.filter(o => o.program === programCode)
+		if (studentsByProgramCode.length === 0) reject('no results returned')
+		resolve(studentsByProgramCode)
+	})
+
+const getStudentsByExpectedCredential = (credential) =>
+	new Promise((resolve, reject) => {
+		const studentsByExpectedCredential = students.filter(o => o.expectedCredential === credential)
+		if (studentsByExpectedCredential.length === 0) reject('no results returned')
+		resolve(studentsByExpectedCredential)
+	})
+
+const getStudentById = (sid) =>
+	new Promise((resolve, reject) => {
+		const student = students.find(o => o.studentID === sid)
+		if (!student) reject('no results returned')
+		resolve(student)
+	})
+
+module.exports = {
+	initialize,
+	getAllStudents,
+	getInternationalStudents,
+	getPrograms,
+	addStudent,
+	getStudentsByStatus,
+	getStudentsByProgramCode,
+	getStudentsByExpectedCredential,
+	getStudentById,
+}
