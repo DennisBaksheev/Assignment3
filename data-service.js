@@ -1,7 +1,7 @@
 const fs = require('fs')
-
 var students = []
 var programs = []
+
 
 const initialize = () =>
 	new Promise((resolve, reject) => {
@@ -22,7 +22,8 @@ const initialize = () =>
 		resolve()
 	})
 
-const getAllStudents = () =>
+
+    const getAllStudents = () =>
 	new Promise((resolve, reject) => {
 		if (!students || students.length === 0) reject('no results returned')
 		resolve(students)
@@ -35,11 +36,6 @@ const getInternationalStudents = () =>
 		resolve(interStudents)
 	})
 
-const getPrograms = () =>
-	new Promise((resolve, reject) => {
-		if (!programs || programs.length === 0) reject('no results returned')
-		resolve(programs)
-	})
 
 const addStudent = (studentData) =>
 	new Promise((resolve, reject) => {
@@ -48,19 +44,23 @@ const addStudent = (studentData) =>
 		} else {
 			studentData.isInternationalStudent = true
 		}
-
-		const maxStudentId = Math.max(...students.map(o => o.studentID))
+        const maxStudentId = Math.max(...students.map(o => o.studentID))
 		const newStudentId = (maxStudentId + 1).toString()
 		studentData.studentID = newStudentId
 		students.push(studentData)
 		resolve(students)
 	})
-
-const getStudentsByStatus = (status) =>
+const getPrograms = () =>
 	new Promise((resolve, reject) => {
-		const studentsByStatus = students.filter(o => o.status === status)
-		if (studentsByStatus.length === 0) reject('no results returned')
-		resolve(studentsByStatus)
+		if (!programs || programs.length === 0) reject('no results returned')
+		resolve(programs)
+	})
+
+const getStudentById = (sid) =>
+	new Promise((resolve, reject) => {
+		const student = students.find(o => o.studentID === sid)
+		if (!student) reject('no results returned')
+		resolve(student)
 	})
 
 const getStudentsByProgramCode = (programCode) =>
@@ -77,11 +77,11 @@ const getStudentsByExpectedCredential = (credential) =>
 		resolve(studentsByExpectedCredential)
 	})
 
-const getStudentById = (sid) =>
+const getStudentsByStatus = (status) =>
 	new Promise((resolve, reject) => {
-		const student = students.find(o => o.studentID === sid)
-		if (!student) reject('no results returned')
-		resolve(student)
+		const studentsByStatus = students.filter(o => o.status === status)
+		if (studentsByStatus.length === 0) reject('no results returned')
+		resolve(studentsByStatus)
 	})
 
 module.exports = {

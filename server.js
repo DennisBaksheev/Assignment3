@@ -1,22 +1,21 @@
 /*********************************************************************************
-*  WEB322 – Assignment 02
-*  I declare that this assignment is my own work in accordance with Seneca  Academic Policy.  No part *  of this assignment has been copied manually or electronically from any other source 
+*  WEB322 – Assignment 03
+*  I declare that this assignment is my own work in accordance with Seneca  Academic Policy.  No part 
+*  of this assignment has been copied manually or electronically from any other source 
 *  (including 3rd party web sites) or distributed to other students.
 * 
-*  Name: _Dennis Baksheev_____________________ Student ID: _114797186_____________ Date: _2022-09-28_______________
+*  Name: _Dennis Baksheev_____________________ Student ID: _114797186_____________ Date: __2022-10-13______________
 *
-*  Online (Cyclic) Link: https://plum-important-wildebeest.cyclic.app/
+*  Online (Cyclic) Link: 
 *
 ********************************************************************************/ 
+
 const express = require('express')
 const fs = require('fs')
 const path = require('path')
 const multer = require('multer')
-
 const dataService = require('./data-service.js')
-
 const app = express()
-
 const PORT = process.env.PORT || 8080
 
 const storage = multer.diskStorage({
@@ -27,6 +26,7 @@ const storage = multer.diskStorage({
 })
 
 const upload = multer({ storage: storage })
+
 
 app.use(express.static(path.join(__dirname, '/public')));
 app.use(express.urlencoded({ extended: true }));
@@ -77,6 +77,18 @@ app.get('/student/:value', (req, res) => {
 	})
 })
 
+app.get('/students/add', (_, res) => {
+	res.sendFile(__dirname + '/views/addStudent.html')
+})
+
+app.post('/students/add', (req, res) => {
+	dataService.addStudent(req.body).then(() => {
+		res.redirect('/students')
+	}).catch((err) => {
+		res.json({ message: err })
+	})
+})
+
 app.get('/intlstudents', (_, res) => {
 	dataService.getInternationalStudents().then((data) => {
 		res.json(data)
@@ -88,18 +100,6 @@ app.get('/intlstudents', (_, res) => {
 app.get('/programs', (_, res) => {
 	dataService.getPrograms().then((data) => {
 		res.json(data)
-	}).catch((err) => {
-		res.json({ message: err })
-	})
-})
-
-app.get('/students/add', (_, res) => {
-	res.sendFile(__dirname + '/views/addStudent.html')
-})
-
-app.post('/students/add', (req, res) => {
-	dataService.addStudent(req.body).then(() => {
-		res.redirect('/students')
 	}).catch((err) => {
 		res.json({ message: err })
 	})
